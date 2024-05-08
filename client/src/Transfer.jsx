@@ -1,41 +1,39 @@
-import { useState } from "react";
-import server from "./server";
+import { useState } from 'react';
+import server from './server';
+import { signMessage } from './util/transfer';
 
-function Transfer({ address, setBalance }) {
+function Transfer({ address, setBalance, privateKey }) {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   const setValue = (setter) => (evt) => setter(evt.target.value);
 
   async function transfer(evt) {
     evt.preventDefault();
-
+    setErrorMessage('');
     try {
-      const {
-        data: { balance },
-      } = await server.post(`send`, {
+      const [signature, recoveryBit] = await signMessage({ amount: parseInt(sendAmount), recipient }, privateKey);
+      const sendObject = {
         sender: address,
         amount: parseInt(sendAmount),
+        signature: Array.from(signature),
+        recoveryBit,
         recipient,
-      });
+      };
+      const {
+        data: { balance },
+      } = await server.post(`send`, sendObject);
       setBalance(balance);
     } catch (ex) {
-      alert(ex.response.data.message);
+      console.error(ex);
+      setErrorMessage(JSON.stringify(ex));
     }
   }
 
   return (
     <form className="container transfer" onSubmit={transfer}>
       <h1>Send Transaction</h1>
-
-      <label>
-        Send Amount
-        <input
-          placeholder="1, 2, 3..."
-          value={sendAmount}
-          onChange={setValue(setSendAmount)}
-        ></input>
-      </label>
 
       <label>
         Recipient
@@ -46,7 +44,17 @@ function Transfer({ address, setBalance }) {
         ></input>
       </label>
 
+      <label>
+        Send Amount
+        <input
+          placeholder="1, 2, 3..."
+          value={sendAmount}
+          onChange={setValue(setSendAmount)}
+        ></input>
+      </label>
+
       <input type="submit" className="button" value="Transfer" />
+      {errorMessage && <div className="error"> {errorMessage} </div>}
     </form>
   );
 }

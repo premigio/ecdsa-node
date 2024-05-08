@@ -17,7 +17,7 @@ label {
 .app {
   display: flex;
   max-width: 1400px;
-  flex-wrap: wrap;
+  // flex-wrap: wrap;
   gap: 12px;
   margin: 0 auto;
 }
@@ -66,7 +66,13 @@ input {
 
 .wallet {
   display: flex;
+  max-width: 50%;
   flex-direction: column;
+
+  > * {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
 
   .balance {
     text-transform: uppercase;
@@ -78,9 +84,38 @@ input {
     padding: 0.75rem;
     background-color: #f4f6f8;
   }
+
+  .address {
+    width: auto;
+    max-width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 350;
+    font-size: .8em;
+    display: inline-flex;
+    margin-top: 0px;
+    padding: 0.75rem;
+    background-color: #f4f6f8;
+    overflow-wrap: break-word;
+  }
+
+  .error {
+    letter-spacing: 0.8px;
+    font-size: .7em;
+    font-weight: 350;
+    color: red;
+  }
 }
 
 .transfer {
   display: flex;
+  max-width: 50%;
   flex-direction: column;
+
+  .error {
+    letter-spacing: 0.8px;
+    font-size: .7em;
+    font-weight: 350;
+    color: red;
+  }
 }
